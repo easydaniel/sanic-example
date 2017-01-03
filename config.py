@@ -1,6 +1,10 @@
-import os
-class Config(object):
-    DEBUG = True
-    DATABASE_URL = 'postgres://tachien:@localhost/tachien'
-    PORT = 5000
-    SECRET = 'something-secret'
+DEBUG = True
+DATABASE = {
+    'host': '<host>',
+    'user': '<username>',
+    'port': '<port>',
+    'password': '<password>',
+    'database': '<database>'
+}
+PORT = 5000
+SECRET = 'something-secret'

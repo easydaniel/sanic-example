@@ -1,24 +1,13 @@
 from sqlalchemy import (
-    Column, String, Integer
+    Column, String
 )
 
 from sqlalchemy.ext.declarative import declarative_base as Base
 
 
-class User(Base):
+class User(Base()):
     __tablename__ = 'users'
 
-    id = Column(Integer, autoincrement=True, primary_key=True)
-
     # Authentication Attributes.
-    username = Column(String(255), nullable=False)
+    username = Column(String(255), nullable=False, primary_key=True)
     password = Column(String(255), nullable=False)
-
-    def __repr__(self):
-        """ Show user object info. """
-        return f'<User: {self.username}>'
-
-    def jsonify(self):
-        obj = self.__dict__
-        obj.pop('_sa_instance_state')
-        return obj

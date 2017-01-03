@@ -1,14 +1,23 @@
 import os
 from sanic import Sanic
 from sanic.response import json
+import asyncio
+import uvloop
 
-from asyncpg import create_pool
+import config
 
-from config import Config
 from blueprints import Blueprints
+
+from database import init_db
+
+asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+
+loop = asyncio.get_event_loop()
 
 app = Sanic(__name__)
 
-app.register_blueprint(Blueprints.auth, url_prefix='/api/auth')
+app.blueprint(Blueprints.auth, url_prefix='/api/auth')
 
-app.go_fast(port=Config.PORT, debug=Config.DEBUG, workers=os.cpu_count())
+loop.create_task(init_db())
+
+app.go_fast(port=config.PORT, debug=config.DEBUG, workers=1, loop=loop)
