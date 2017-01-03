@@ -1,21 +1,22 @@
 from sanic.response import json
 from sanic import Blueprint
+
 from database import DB
+from utils import parse_form, jsonify
 
 import bcrypt
 import jwt
-
 import config
+
 from models.user import User
 
-from utils import parse_form
 
 bp = Blueprint(__name__)
 
 @bp.route('/', methods=['GET'])
 async def index(request):
     users = await DB.select([User]).execute()
-    return json({'users': users})
+    return json({'users': jsonify(users)})
 
 @bp.route('/new', methods=['POST'])
 async def new(request):
@@ -25,9 +26,8 @@ async def new(request):
         return json({'msg': 'user exists'})
     else:
         form['password'] = bcrypt.hashpw(form['password'].encode(), bcrypt.gensalt()).decode()
-        await DB.insert(User.__table__).values(form).execute()
-        user = await DB.select([User]).where(User.username == form['username']).execute()
-        return json({'user': user[0]})
+        user = await DB.insert(User.__table__).values(form).execute()
+        return json({'user': jsonify(user)[0]})
 
 @bp.route('/login', methods=['POST'])
 async def login(request):
@@ -42,5 +42,5 @@ async def login(request):
 
 @bp.route('/refresh', methods=['GET'])
 async def refresh(request):
-    await DB.delete(User.__table__).execute()
-    return json({'msg': 'all users deleted'})
+    result = await DB.delete(User.__table__).execute()
+    return json({'deleted': jsonify(result)})

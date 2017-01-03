@@ -40,6 +40,9 @@ class DB:
         async def execute(self):
             sql = self.compile(dialect=LiteralDialect(), compile_kwargs={
                                "literal_binds": True}, inline=True)
+            if not isinstance(self, DB.select):
+                # Return result rows instead of psql result
+                sql = f'{sql} RETURNING *'
             # Take a connection from the pool.
             async with DB.pool.acquire() as connection:
                 # Open a transaction.
@@ -65,7 +68,6 @@ async def init_db():
     async with DB.pool.acquire() as connection:
         # Open a transaction.
         async with connection.transaction():
-            with open('table.sql', 'r') as table:
+            with open('table.sql', 'r') as sql:
                 # Create table
-                sql = table.read()
-                await connection.execute(sql)
+                await connection.execute(sql.read())

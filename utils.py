@@ -8,3 +8,6 @@ def parse_form(form, args=[]):
         return result
     except:
         pass
+
+def jsonify(records):
+    return [{key: value for key, value in zip(r.keys(), r.values())} for r in records]
