@@ -7,7 +7,7 @@ from sqlalchemy.sql.sqltypes import DateTime, NullType, String
 
 
 class StringLiteral(String):
-    """Teach SA how to literalize various things."""
+    """Teach SQLAlchemy how to literalize various things."""
 
     def literal_processor(self, dialect):
         super_processor = super(StringLiteral, self).literal_processor(dialect)
@@ -23,6 +23,7 @@ class StringLiteral(String):
             return result
         return process
 
+
 class LiteralDialect(postgresql.dialect):
     colspecs = {
         # prevent various encoding explosions
@@ -33,10 +34,10 @@ class LiteralDialect(postgresql.dialect):
         NullType: StringLiteral
     }
 
+
 class DB:
 
     class base:
-
         async def execute(self):
             sql = self.compile(dialect=LiteralDialect(), compile_kwargs={
                                "literal_binds": True}, inline=True)
@@ -61,6 +62,7 @@ class DB:
 
     class update(base, sqlalchemy.sql.dml.Update):
         pass
+
 
 async def init_db():
     DB.pool = await create_pool(**config.DATABASE)

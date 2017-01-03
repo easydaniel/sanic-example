@@ -13,32 +13,42 @@ from models.user import User
 
 bp = Blueprint(__name__)
 
+
 @bp.route('/', methods=['GET'])
 async def index(request):
     users = await DB.select([User]).execute()
     return json({'users': jsonify(users)})
 
+
 @bp.route('/new', methods=['POST'])
 async def new(request):
     form = parse_form(request.form, ['username', 'password'])
-    user = await DB.select([User]).where(User.username == form['username']).execute()
+    user = await DB.select([User]).where(
+        User.username == form['username']).execute()
     if len(user):
         return json({'msg': 'user exists'})
     else:
-        form['password'] = bcrypt.hashpw(form['password'].encode(), bcrypt.gensalt()).decode()
+        form['password'] = bcrypt.hashpw(
+            form['password'].encode(), bcrypt.gensalt()).decode()
         user = await DB.insert(User.__table__).values(form).execute()
         return json({'user': jsonify(user)[0]})
+
 
 @bp.route('/login', methods=['POST'])
 async def login(request):
     form = parse_form(request.form, ['username', 'password'])
-    user = await DB.select([User]).where(User.username == form['username']).execute()
+    user = await DB.select([User]).where(
+        User.username == form['username']).execute()
+    obj = {'username': form['username']}
     if len(user):
-        if bcrypt.checkpw(form['password'].encode(), user[0]['password'].encode()):
-            return json({'token': jwt.encode({'username': form['username']}, config.SECRET, algorithm='HS256')})
+        if bcrypt.checkpw(
+                form['password'].encode(), user[0]['password'].encode()):
+            return json({'token':
+                         jwt.encode(obj, config.SECRET, algorithm='HS256')})
         return json({'msg': 'wrong password'})
     else:
         return json({'msg': 'user not exists'})
+
 
 @bp.route('/refresh', methods=['GET'])
 async def refresh(request):

@@ -8,3 +8,4 @@ DATABASE = {
 }
 PORT = 5000
 SECRET = 'something-secret'
+WORKERS = 1 # or use os.count_cpu() instead

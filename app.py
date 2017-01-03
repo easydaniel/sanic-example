@@ -1,6 +1,4 @@
-import os
 from sanic import Sanic
-from sanic.response import json
 import asyncio
 import uvloop
 
@@ -20,4 +18,4 @@ app.blueprint(Blueprints.auth, url_prefix='/api/auth')
 
 loop.create_task(init_db())
 
-app.go_fast(port=config.PORT, debug=config.DEBUG, workers=1, loop=loop)
+app.go_fast(port=config.PORT, debug=config.DEBUG, workers=config.WORKERS, loop=loop)
