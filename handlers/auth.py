@@ -2,7 +2,7 @@ from sanic.response import json
 from sanic.views import HTTPMethodView
 
 from database import DB
-from utils import parse_form, jsonify
+from utils.parser import parse_form, jsonify
 
 import config
 import jwt
