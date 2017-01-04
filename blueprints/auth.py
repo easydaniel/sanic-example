@@ -2,7 +2,7 @@ from sanic.response import json
 from sanic import Blueprint
 
 from database import DB
-from utils import parse_form, jsonify
+from utils.parser import parse_form, jsonify
 
 import bcrypt
 import jwt
