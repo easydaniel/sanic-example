@@ -6,9 +6,10 @@ import logging
 
 import config
 
-from blueprints import Blueprints
 from database import init_db
 
+from handlers.auth import AuthHandler
+from handlers.user import UserHandler
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
@@ -16,7 +17,8 @@ loop = asyncio.get_event_loop()
 
 app = Sanic(__name__)
 
-app.blueprint(Blueprints.auth, url_prefix='/api/auth')
+app.add_route(UserHandler(), '/api/user/')
+app.add_route(AuthHandler(), '/api/auth/')
 
 loop.create_task(init_db())
 

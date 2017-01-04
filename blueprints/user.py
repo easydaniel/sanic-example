@@ -1,5 +1,5 @@
 from sanic.response import json
-from sanic import Blueprint
+from sanic.views import HTTPMethodView
 
 from database import DB
 from utils import parse_form, jsonify
@@ -11,27 +11,23 @@ import config
 from models.user import User
 
 
-bp = Blueprint(__name__)
+class UserHandler(HTTPMethodView):
 
+    async def get(self, request):
+        users = await DB.select([User]).execute()
+        return json({'users': jsonify(users)})
 
-@bp.route('/', methods=['GET'])
-async def index(request):
-    users = await DB.select([User]).execute()
-    return json({'users': jsonify(users)})
-
-
-@bp.route('/new', methods=['POST'])
-async def new(request):
-    form = parse_form(request.form, ['username', 'password'])
-    user = await DB.select([User]).where(
-        User.username == form['username']).execute()
-    if len(user):
-        return json({'msg': 'user exists'})
-    else:
-        form['password'] = bcrypt.hashpw(
-            form['password'].encode(), bcrypt.gensalt()).decode()
-        user = await DB.insert(User.__table__).values(form).execute()
-        return json({'user': jsonify(user)[0]})
+    async def post(self, request):
+        form = parse_form(request.form, ['username', 'password'])
+        user = await DB.select([User]).where(
+            User.username == form['username']).execute()
+        if len(user):
+            return json({'msg': 'user exists'})
+        else:
+            form['password'] = bcrypt.hashpw(
+                form['password'].encode(), bcrypt.gensalt()).decode()
+            user = await DB.insert(User.__table__).values(form).execute()
+            return json({'user': jsonify(user)[0]})
 
 
 @bp.route('/login', methods=['POST'])
