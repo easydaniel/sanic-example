@@ -35,5 +35,5 @@ if config.DEBUG:
 
 
 if __name__ == '__main__':
-    app.go_fast(port=config.PORT, workers=config.WORKERS,
+    app.go_fast(host=config.HOST, port=config.PORT, workers=config.WORKERS,
                 debug=config.DEBUG, loop=loop)

@@ -48,4 +48,4 @@ class PayHandler(HTTPMethodView):
             return json(jsonify(pays)[0])
         else:
             pays = await DB.insert(Models.Pay).values(form).execute()
-            return json(jsonify(pays)[0]))
+            return json(jsonify(pays)[0])
