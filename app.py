@@ -9,6 +9,7 @@ import config
 from database import init_db
 
 from handlers import Handler
+from utils.decorator import authenticated
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
@@ -18,6 +19,7 @@ app = Sanic(__name__)
 
 app.add_route(Handler.UserHandler(), '/api/user/')
 app.add_route(Handler.AuthHandler(), '/api/auth/')
+app.add_route(authenticated(Handler.PayHandler()), '/api/pay/')
 
 loop.create_task(init_db())
 

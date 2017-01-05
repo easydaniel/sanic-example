@@ -1,13 +1,16 @@
+from sanic.exceptions import ServerError
+
 def parse_form(form, args=[]):
     try:
         result = {}
         for arg in args:
-            result[arg] = form.get(arg)
-            if result[arg] is None:
-                raise
+            if not form.get(arg) is None:
+                result[arg] = form.get(arg)
+        if set(result.keys()) != set(args):
+            raise
         return result
     except:
-        pass
+        raise ServerError(f'Missing argument: {[arg for arg in list(set(args) - set(result.keys()))]}')
 
 
 def jsonify(records):
